@@ -13,7 +13,6 @@ import {
   Link,
   Menu,
   MenuButton,
-  MenuDivider,
   MenuItem,
   MenuList,
   Text,
@@ -21,12 +20,8 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import useScreenDetector from "@/hooks/useScreenDetector";
-import { useQuery } from "@tanstack/react-query";
-import { GetMe } from "@/services/auth.services";
-import { preventRefetch } from "@/app/helpers/preventRefetch";
-import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { deleteAllCookies } from "@/app/helpers/clearCookies";
 
@@ -35,17 +30,6 @@ const NavbarDesktop = () => {
   const btnRef = useRef(null);
   const { isMobile } = useScreenDetector();
   const router = useRouter();
-
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["GetMe"],
-    queryFn: () => GetMe(),
-    select: ({ data }) => data,
-    ...preventRefetch,
-  });
-
-  useEffect(() => {
-    if (!!data) Cookies.set("PROFILE_USER", JSON.stringify(data));
-  }, [data]);
 
   const onSignOutClick = () => {
     deleteAllCookies();
@@ -103,25 +87,9 @@ const NavbarDesktop = () => {
             _expanded={{ bg: "blue.400" }}
             _focus={{ boxShadow: "outline" }}
           >
-            {isLoading ? "Loading..." : "Sign Out"}
+            Sign Out
           </MenuButton>
           <MenuList>
-            <MenuItem isDisabled _hover={{ bg: "none" }}>
-              {isLoading ? (
-                <Text color="gray.600" fontWeight="bold" pl={1}>
-                  Loading...
-                </Text>
-              ) : error ? (
-                <Text color="red.500" fontWeight="bold" pl={1}>
-                  Error loading user
-                </Text>
-              ) : (
-                <Text color="gray.600" fontWeight="bold" pl={1}>
-                  {data?.username || "Guest"}
-                </Text>
-              )}
-            </MenuItem>
-            <MenuDivider />
             <MenuItem color="black" onClick={onSignOutClick}>
               Sign out
             </MenuItem>

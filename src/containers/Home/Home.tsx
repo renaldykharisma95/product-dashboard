@@ -1,5 +1,7 @@
 "use client";
 
+import { preventRefetch } from "@/app/helpers/preventRefetch";
+import { GetMe } from "@/services/auth.services";
 import {
   Avatar,
   Badge,
@@ -8,19 +10,60 @@ import {
   Flex,
   Heading,
   SimpleGrid,
+  Skeleton,
+  SkeletonCircle,
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
-const HomeView = ({ data }: any) => {
-  const [profileData, setProfileData] = useState({} as any);
+const HomeView = () => {
+  const {
+    data: profileData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["GetMe"],
+    queryFn: () => GetMe(),
+    select: ({ data }) => data,
+    ...preventRefetch,
+  });
 
-  useEffect(() => {
-    if (typeof window !== undefined) {
-      setProfileData(JSON.parse(data));
-    }
-  }, [data]);
+  if (isLoading) {
+    return (
+      <Box pb={6}>
+        <Flex direction={{ base: "column", md: "row" }} align="center" gap={6}>
+          <SkeletonCircle size="32" />
+          <Box width="full">
+            <Skeleton height="30px" width="200px" mb={2} />
+            <Skeleton height="20px" width="150px" mb={2} />
+            <Skeleton height="24px" width="80px" />
+          </Box>
+        </Flex>
+
+        <Divider my={6} />
+
+        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+          {[...Array(5)].map((_, i) => (
+            <Stack key={i}>
+              <Skeleton height="24px" width="120px" mb={2} />
+              {[...Array(7)].map((_, j) => (
+                <Skeleton key={j} height="20px" width="full" />
+              ))}
+            </Stack>
+          ))}
+        </SimpleGrid>
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box textAlign="center" py={10}>
+        <Text color="red.500">Error loading profile: {error.message}</Text>
+      </Box>
+    );
+  }
 
   return (
     <Box pb={6}>
@@ -84,7 +127,7 @@ const HomeView = ({ data }: any) => {
             <Text>University: {profileData?.university}</Text>
             <Text>
               Card: {profileData?.bank?.cardType} ****
-              {profileData?.bank?.cardNumber.slice(-4)}
+              {profileData?.bank?.cardNumber?.slice(-4)}
             </Text>
             <Text>IBAN: {profileData?.bank?.iban}</Text>
             <Text>Currency: {profileData?.bank?.currency}</Text>
