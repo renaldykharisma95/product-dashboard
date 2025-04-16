@@ -21,6 +21,7 @@ import {
   ModalHeader,
   ModalOverlay,
   SimpleGrid,
+  Skeleton,
   Spinner,
   Stack,
   Text,
@@ -63,10 +64,10 @@ const ProductList = () => {
         align="center"
         justifyContent="space-between"
         pr={[0, 3, 5]}
-        gap={4}
+        gap={isMobile ? 4 : 0}
         flexDirection={["column", "column", "row"]}
       >
-        <InputGroup w={["100%", "100%", "400px"]}>
+        <InputGroup w={["full", "100%", "400px"]}>
           <InputLeftElement pointerEvents="none">
             <SearchIcon color="gray.400" />
           </InputLeftElement>
@@ -82,14 +83,17 @@ const ProductList = () => {
           colorScheme="green"
           leftIcon={<AddIcon />}
           onClick={() => router.push("/product/create-product")}
-          w={["100%", "auto", "auto"]}
+          w={["full", "auto", "auto"]}
         >
           Create New Product
         </Button>
       </Flex>
-
       {isLoading ? (
-        <Spinner size="xl" mt={8} />
+        <Box py={5}>
+          {Array(10).map((_, idx: number) => (
+            <Skeleton key={"skeleton" + idx} size="xl" />
+          ))}
+        </Box>
       ) : (
         <>
           <SimpleGrid

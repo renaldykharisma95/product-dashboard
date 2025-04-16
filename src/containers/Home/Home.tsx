@@ -1,6 +1,7 @@
 "use client";
 
 import { preventRefetch } from "@/app/helpers/preventRefetch";
+import useScreenDetector from "@/hooks/useScreenDetector";
 import { GetMe } from "@/services/auth.services";
 import {
   Avatar,
@@ -28,6 +29,8 @@ const HomeView = () => {
     select: (data) => data,
     ...preventRefetch,
   });
+
+  const { isMobile } = useScreenDetector();
 
   if (isLoading) {
     return (
@@ -71,7 +74,6 @@ const HomeView = () => {
         <Flex
           direction={{ base: "column", md: "row" }}
           align="center"
-          justify="center"
           gap={6}
         >
           <Avatar
@@ -79,7 +81,11 @@ const HomeView = () => {
             name={profileData?.firstName}
             src={profileData?.image}
           />
-          <Flex align="center" justify="center" direction="column">
+          <Flex
+            align={isMobile ? "center" : "start"}
+            justify={isMobile ? "start" : "start"}
+            direction="column"
+          >
             <Heading size="lg">
               {profileData?.firstName} {profileData?.lastName}
             </Heading>
