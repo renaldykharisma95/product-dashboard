@@ -13,11 +13,14 @@ const useLoginAction = () => {
   const router = useRouter();
 
   const mutation = useMutation({
-    mutationFn: (loginData: any) => PostLogin({ ...loginData }),
+    mutationFn: async (loginData: any) => await PostLogin({ ...loginData }),
     onSuccess: (data) => {
-      Cookies.set("ACCESS_TOKEN", String(data.accessToken));
-      Cookies.set("REFRESH_TOKEN", String(data.refreshToken));
-      router.push("/");
+      if (!!data) {
+        Cookies.set("ACCESS_TOKEN", String(data.accessToken));
+        Cookies.set("REFRESH_TOKEN", String(data.refreshToken));
+        Cookies.set("PROFILE_LOGIN", JSON.stringify(data))
+        router.push("/");
+      }
     },
     onError: (error) => {
       toast({

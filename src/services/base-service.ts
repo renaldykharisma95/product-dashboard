@@ -12,130 +12,83 @@ interface ErrorResponse {
   status: "error";
 }
 
-const token = Cookies.get("ACCESS_TOKEN");
-const refreshToken = Cookies.get("REFRESH_TOKEN");
+const getAccessToken = () => Cookies.get("ACCESS_TOKEN") || "";
+const getRefreshToken = () => Cookies.get("REFRESH_TOKEN") || "";
 
-const getToken = async () => {
+const setTokens = (accessToken: string, refreshToken: string) => {
+  Cookies.set("ACCESS_TOKEN", accessToken);
+  Cookies.set("REFRESH_TOKEN", refreshToken);
+};
+
+const getToken = async (): Promise<boolean> => {
   try {
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-    };
-
-    const res = await axiosInstance.post<{
+    const response = await axiosInstance.post<{
       accessToken: string;
       refreshToken: string;
-    }>("/auth/refresh", { refreshToken: refreshToken }, headers);
-    const newAccessToken = res.data.accessToken || "";
-    const newRefreshToken = res.data.refreshToken || "";
-    Cookies.set("ACCESS_TOKEN", newAccessToken);
-    Cookies.set("REFRESH_TOKEN", newRefreshToken);
+    }>(
+      "/auth/refresh",
+      { refreshToken: getRefreshToken() },
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+    setTokens(response.data.accessToken, response.data.refreshToken);
+    return true;
   } catch (err) {
     deleteAllCookies();
     console.error("Token refresh failed", err);
+    return false;
   }
 };
 
-export const get = async <T>(
+const request = async <T>(
+  method: "get" | "post" | "put" | "delete",
   url: string,
-  queries?: any
+  data?: any,
+  queries?: any,
+  retry = true
 ): Promise<T | ErrorResponse> => {
   try {
-    const token = Cookies.get("ACCESS_TOKEN");
-    let reUrl = "";
-    if (queries) reUrl = url + `?${toQueryString(queries)}`;
-    const response = await axiosInstance.get<ApiResponse<T>>(
-      encodeURI(reUrl ? reUrl : url),
-      {
-        headers: {
-          Authorization: token,
-        },
-      }
-    );
-    return response as T;
-  } catch (error: any) {
-    if (error.response?.status === 401) {
-      await getToken();
-      await get(url);
-    }
-    throw {
-      message: error instanceof Error ? error.message : "An error occurred",
-      status: "error",
-    };
-  }
-};
+    const token = getAccessToken();
+    const finalUrl = queries ? `${url}?${toQueryString(queries)}` : url;
+    const isLogin = document.location.href.includes("login");
 
-export const post = async <T, D = unknown>(
-  url: string,
-  data: D
-): Promise<T | ErrorResponse> => {
-  try {
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
+    const config = {
+      method,
+      url: encodeURI(finalUrl),
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      ...(data && { data: JSON.stringify(data) }),
     };
 
-    if (token) {
-      headers["Authorization"] = token ? `Bearer ${token}` : "";
-    }
+    if (isLogin) delete config.headers["Authorization"];
 
-    const response = await axiosInstance.post<ApiResponse<T>>(
-      encodeURI(url),
-      JSON.stringify(data),
-      {
-        headers,
-      }
-    );
+    const response = await axiosInstance.request<ApiResponse<T>>(config);
 
     return response.data as T;
   } catch (error: any) {
+    const status = error.response?.status;
+
+    if (status === 401 && retry) {
+      const refreshed = await getToken();
+      if (refreshed) {
+        return request<T>(method, url, data, queries, false);
+      }
+    }
+
     throw {
-      message: error?.message ?? "An error occurred",
+      message: error?.message || "An error occurred",
       status: "error",
     };
   }
 };
 
-export const put = async <T, D = unknown>(
-  url: string,
-  data: D,
-  token?: string
-): Promise<T | ErrorResponse> => {
-  try {
-    const response = await axiosInstance.put<ApiResponse<T>>(
-      encodeURI(url),
-      data,
-      {
-        headers: {
-          Authorization: token,
-        },
-      }
-    );
-    return response.data as T;
-  } catch (error) {
-    throw {
-      message: error instanceof Error ? error.message : "An error occurred",
-      status: "error",
-    };
-  }
-};
-
-export const del = async <T>(
-  url: string,
-  token?: string
-): Promise<T | ErrorResponse> => {
-  try {
-    const response = await axiosInstance.delete<ApiResponse<T>>(
-      encodeURI(url),
-      {
-        headers: {
-          Authorization: token,
-        },
-      }
-    );
-    return response.data as T;
-  } catch (error) {
-    throw {
-      message: error instanceof Error ? error.message : "An error occurred",
-      status: "error",
-    };
-  }
-};
+export const get = <T>(url: string, queries?: any) =>
+  request<T>("get", url, undefined, queries);
+export const post = <T, D = unknown>(url: string, data: D) =>
+  request<T>("post", url, data);
+export const put = <T, D = unknown>(url: string, data: D) =>
+  request<T>("put", url, data);
+export const del = <T>(url: string) => request<T>("delete", url);

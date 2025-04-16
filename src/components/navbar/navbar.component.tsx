@@ -1,14 +1,18 @@
 "use client";
 
 import {
+  Avatar,
   Button,
+  Center,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
   DrawerContent,
+  DrawerHeader,
   DrawerOverlay,
   Flex,
   Heading,
+  HStack,
   IconButton,
   Link,
   Menu,
@@ -22,14 +26,24 @@ import {
 import { HamburgerIcon } from "@chakra-ui/icons";
 import React, { useRef } from "react";
 import useScreenDetector from "@/hooks/useScreenDetector";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { deleteAllCookies } from "@/app/helpers/clearCookies";
+import Logout from "../../assets/logout.webp";
+import Image from "next/image";
+import { sidebaritems } from "../sidebar/sidebaritem";
 
-const NavbarDesktop = () => {
+const NavbarDesktop = ({ profile }: { profile: string }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef(null);
   const { isMobile } = useScreenDetector();
   const router = useRouter();
+  const pathname = usePathname();
+
+  const profileData =
+    profile && profile !== "undefined" ? JSON.parse(profile) : {};
+
+  const fullname =
+    (profileData.firstName || "") + " " + (profileData.lastName || "");
 
   const onSignOutClick = () => {
     deleteAllCookies();
@@ -39,18 +53,16 @@ const NavbarDesktop = () => {
 
   return (
     <Flex
-      height="70px"
+      height="90px"
       justifyContent="space-between"
       alignItems="center"
       position="absolute"
       top={0}
       right={0}
       left={isMobile ? 0 : "auto"}
-      w={{ md: "calc(100% - 200px)", sm: "100%" }}
-      px={6}
-      bg="linear-gradient(to right, #00b5d8, #007d80)"
+      w={{ md: "calc(100% - 260px)", sm: "100%" }}
+      px={isMobile ? 2 : 6}
       boxShadow="md"
-      color="white"
       zIndex={2}
     >
       <Flex justifyContent="flex-start" alignItems="center" gap={6}>
@@ -61,8 +73,8 @@ const NavbarDesktop = () => {
             icon={<HamburgerIcon />}
             aria-label="menu"
             variant="ghost"
-            color="white"
-            borderColor="white"
+            color="inherit"
+            borderColor="inherit"
           />
         )}
         <Heading as="h5" size="md">
@@ -74,10 +86,8 @@ const NavbarDesktop = () => {
           <MenuButton
             as={Button}
             width="full"
-            colorScheme="whiteAlpha"
             variant="outline"
-            color="white"
-            borderColor="white"
+            borderColor="grey.400"
             px={4}
             py={2}
             transition="all 0.2s"
@@ -87,7 +97,10 @@ const NavbarDesktop = () => {
             _expanded={{ bg: "blue.400" }}
             _focus={{ boxShadow: "outline" }}
           >
-            Sign Out
+            <Center gap={2}>
+              <Image src={Logout} alt="signout" width={20} height={20} />
+              Sign Out
+            </Center>
           </MenuButton>
           <MenuList>
             <MenuItem color="black" onClick={onSignOutClick}>
@@ -103,45 +116,53 @@ const NavbarDesktop = () => {
         finalFocusRef={btnRef}
       >
         <DrawerOverlay />
-        <DrawerContent>
+        <DrawerContent
+          bgGradient="linear(to-b, blue.600, blue.800)"
+          color="white"
+          pt={4}
+        >
           <DrawerCloseButton />
-
+          <DrawerHeader>
+            <Flex w="full" justify="center" align="center" mb={8}>
+              <VStack spacing={2}>
+                <Avatar name={fullname} src={profileData.image} size="md" />
+                <Text fontWeight="bold">{fullname}</Text>
+              </VStack>
+            </Flex>
+          </DrawerHeader>
           <DrawerBody>
-            <VStack align="start" spacing={6}>
-              <Link
-                href="/"
-                _hover={{ textDecoration: "none" }}
-                display="block"
-                w="full"
-              >
-                <Text
-                  fontSize="lg"
-                  _hover={{
-                    cursor: "pointer",
-                    bg: "white.600",
-                    borderRadius: "md",
-                  }}
-                >
-                  Home
-                </Text>
-              </Link>
-              <Link
-                href="/product"
-                _hover={{ textDecoration: "none" }}
-                display="block"
-                w="full"
-              >
-                <Text
-                  fontSize="lg"
-                  _hover={{
-                    cursor: "pointer",
-                    bg: "white.600",
-                    borderRadius: "md",
-                  }}
-                >
-                  Product
-                </Text>
-              </Link>
+            <VStack align="stretch" spacing={3}>
+              {sidebaritems.map((item, idx) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={idx}
+                    href={item.href}
+                    _hover={{ textDecoration: "none" }}
+                    w="full"
+                  >
+                    <HStack
+                      px={4}
+                      py={2.5}
+                      borderRadius="md"
+                      transition="all 0.2s"
+                      bg={isActive ? "blue.700" : "transparent"}
+                      _hover={{
+                        bg: "blue.600",
+                        transform: "translateX(4px)",
+                      }}
+                    >
+                      <Image
+                        src={item.image}
+                        alt={`image${idx}`}
+                        width={20}
+                        height={20}
+                      />
+                      <Text fontSize="md">{item.label}</Text>
+                    </HStack>
+                  </Link>
+                );
+              })}
             </VStack>
           </DrawerBody>
         </DrawerContent>

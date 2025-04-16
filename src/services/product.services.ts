@@ -4,7 +4,7 @@ export const GetProductList = async (query: any) => {
   try {
     const isSearch = !!query?.q;
     const resp = await get<any>(`/products${isSearch ? "/search" : ""}`, query);
-    return resp?.data;
+    return resp;
   } catch (error) {
     throw error as any;
   }

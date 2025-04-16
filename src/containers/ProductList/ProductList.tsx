@@ -26,11 +26,12 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import ProductCard from "./partials/ProductCard";
+import ProductCard from "./partials/ProductCard/ProductCard";
 import useProductListAction from "./ProductList.action";
 import { AddIcon, SearchIcon } from "@chakra-ui/icons";
 import EditForm from "./partials/EditForm/EditForm";
 import { useRef } from "react";
+import useScreenDetector from "@/hooks/useScreenDetector";
 
 const ProductList = () => {
   const {
@@ -54,12 +55,14 @@ const ProductList = () => {
 
   const cancelRef = useRef(null);
 
+  const { isMobile } = useScreenDetector();
+
   return (
     <Box pb={12}>
       <Flex
         align="center"
         justifyContent="space-between"
-        pr={[2, 3, 5]}
+        pr={[0, 3, 5]}
         gap={4}
         flexDirection={["column", "column", "row"]}
       >
@@ -89,7 +92,12 @@ const ProductList = () => {
         <Spinner size="xl" mt={8} />
       ) : (
         <>
-          <SimpleGrid columns={[1, 2, 3]} spacing={6} py={5} pr={5}>
+          <SimpleGrid
+            columns={[1, 2, 3]}
+            spacing={6}
+            py={5}
+            pr={isMobile ? 0 : 5}
+          >
             {allProducts.map((product, idx) => (
               <ProductCard
                 onEdit={onEditProductPage}

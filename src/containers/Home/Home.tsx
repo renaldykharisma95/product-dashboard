@@ -25,7 +25,7 @@ const HomeView = () => {
   } = useQuery({
     queryKey: ["GetMe"],
     queryFn: () => GetMe(),
-    select: ({ data }) => data,
+    select: (data) => data,
     ...preventRefetch,
   });
 
@@ -68,13 +68,18 @@ const HomeView = () => {
   return (
     <Box pb={6}>
       <Box>
-        <Flex direction={{ base: "column", md: "row" }} align="center" gap={6}>
+        <Flex
+          direction={{ base: "column", md: "row" }}
+          align="center"
+          justify="center"
+          gap={6}
+        >
           <Avatar
             size="2xl"
             name={profileData?.firstName}
             src={profileData?.image}
           />
-          <Box>
+          <Flex align="center" justify="center" direction="column">
             <Heading size="lg">
               {profileData?.firstName} {profileData?.lastName}
             </Heading>
@@ -84,7 +89,7 @@ const HomeView = () => {
             <Badge mt={2} colorScheme="purple">
               {profileData?.bloodGroup}
             </Badge>
-          </Box>
+          </Flex>
         </Flex>
 
         <Divider my={6} />
