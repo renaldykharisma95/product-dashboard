@@ -35,7 +35,7 @@ import { sidebaritems } from "../sidebar/sidebaritem";
 const NavbarDesktop = ({ profile }: { profile: string }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef(null);
-  const { isMobile } = useScreenDetector();
+  const { isMobile, isTablet } = useScreenDetector();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -59,14 +59,14 @@ const NavbarDesktop = ({ profile }: { profile: string }) => {
       position="absolute"
       top={0}
       right={0}
-      left={isMobile ? 0 : "auto"}
-      w={{ md: "calc(100% - 260px)", sm: "100%" }}
-      px={isMobile ? 2 : 6}
+      left={isMobile || isTablet ? 0 : "auto"}
+      w={{ lg: "calc(100% - 260px)", sm: "100%" }}
+      px={isMobile || isTablet ? 2 : 6}
       boxShadow="md"
       zIndex={2}
     >
       <Flex justifyContent="flex-start" alignItems="center" gap={6}>
-        {isMobile && (
+        {(isMobile || isTablet) && (
           <IconButton
             ref={btnRef}
             onClick={onOpen}

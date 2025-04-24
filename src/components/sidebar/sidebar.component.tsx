@@ -43,7 +43,7 @@ const Sidebar = ({ profile }: { profile: string }) => {
       </Flex>
       <VStack align="stretch" spacing={3}>
         {sidebaritems.map((item, idx) => {
-          const isActive = pathname === item.href;
+          const isActive = pathname.includes(item.label.toLowerCase());
           return (
             <Link
               key={idx}

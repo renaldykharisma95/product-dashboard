@@ -16,20 +16,22 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import useAddProductAction from "./addproduct.action";
+import useScreenDetector from "@/hooks/useScreenDetector";
 
 const AddProductForm = () => {
   const { formik } = useAddProductAction();
   const { errors, touched, handleBlur } = formik;
   const { values, handleChange, setFieldValue, handleSubmit } = formik;
+  const { isTablet } = useScreenDetector();
 
   return (
-    <Box maxW="full" mx="auto" p={6}>
+    <Box maxW="full" mx="auto" px={isTablet ? 0 : 6} py={4}>
       <Heading size="md" mb={4}>
         Add New Product
       </Heading>
       <form onSubmit={handleSubmit}>
         <Stack spacing={4}>
-          <FormControl isRequired isInvalid={!!errors.title && touched.title}>
+          <FormControl isRequired isInvalid={!!errors.title}>
             <FormLabel>Title</FormLabel>
             <Input
               name="title"
@@ -40,7 +42,7 @@ const AddProductForm = () => {
             <FormErrorMessage>{errors.title}</FormErrorMessage>
           </FormControl>
 
-          <FormControl isInvalid={!!errors.description && touched.description}>
+          <FormControl isRequired isInvalid={!!errors.description}>
             <FormLabel>Description</FormLabel>
             <Textarea
               name="description"
@@ -52,7 +54,7 @@ const AddProductForm = () => {
           </FormControl>
 
           <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-            <FormControl isInvalid={!!errors.category && touched.category}>
+            <FormControl isRequired isInvalid={!!errors.category}>
               <FormLabel>Category</FormLabel>
               <Input
                 name="category"
@@ -62,7 +64,7 @@ const AddProductForm = () => {
               />
               <FormErrorMessage>{errors.category}</FormErrorMessage>
             </FormControl>
-            <FormControl isInvalid={!!errors.brand && touched.brand}>
+            <FormControl isRequired isInvalid={!!errors.brand}>
               <FormLabel>Brand</FormLabel>
               <Input
                 name="brand"
@@ -72,7 +74,7 @@ const AddProductForm = () => {
               />
               <FormErrorMessage>{errors.brand}</FormErrorMessage>
             </FormControl>
-            <FormControl isInvalid={!!errors.price && touched.price}>
+            <FormControl isRequired isInvalid={!!errors.price}>
               <FormLabel>Price</FormLabel>
               <NumberInput
                 name="price"
@@ -84,11 +86,7 @@ const AddProductForm = () => {
               </NumberInput>
               <FormErrorMessage>{errors.price}</FormErrorMessage>
             </FormControl>
-            <FormControl
-              isInvalid={
-                !!errors.discountPercentage && touched.discountPercentage
-              }
-            >
+            <FormControl isRequired isInvalid={!!errors.discountPercentage}>
               <FormLabel>Discount %</FormLabel>
               <NumberInput
                 name="discountPercentage"
@@ -100,7 +98,7 @@ const AddProductForm = () => {
               </NumberInput>
               <FormErrorMessage>{errors.discountPercentage}</FormErrorMessage>
             </FormControl>
-            <FormControl isInvalid={!!errors.stock && touched.stock}>
+            <FormControl isRequired isInvalid={!!errors.stock}>
               <FormLabel>Stock</FormLabel>
               <NumberInput
                 name="stock"
@@ -112,7 +110,7 @@ const AddProductForm = () => {
               </NumberInput>
               <FormErrorMessage>{errors.stock}</FormErrorMessage>
             </FormControl>
-            <FormControl isInvalid={!!errors.sku && touched.sku}>
+            <FormControl isRequired isInvalid={!!errors.sku}>
               <FormLabel>SKU</FormLabel>
               <Input
                 name="sku"
@@ -130,7 +128,11 @@ const AddProductForm = () => {
           <Stack spacing={2}>
             <Stack spacing={2}>
               {values.tags.map((tag, idx) => (
-                <FormControl key={idx} isInvalid={!!errors.tags?.[idx]}>
+                <FormControl
+                  isRequired
+                  key={idx}
+                  isInvalid={!!errors.tags?.[idx]}
+                >
                   <Input
                     name={`tags[${idx}]`}
                     value={values.tags[idx]}
@@ -143,7 +145,6 @@ const AddProductForm = () => {
                   <FormErrorMessage>{errors.tags?.[idx]}</FormErrorMessage>
                 </FormControl>
               ))}
-
               {values.tags.length < 2 && (
                 <Button
                   size="sm"
@@ -160,7 +161,7 @@ const AddProductForm = () => {
           <Heading size="sm" mt={6}>
             Images
           </Heading>
-          <FormControl isInvalid={!!errors.images && touched.images}>
+          <FormControl isRequired isInvalid={!!errors.images}>
             <Input
               name="images"
               value={values.images}
@@ -175,11 +176,7 @@ const AddProductForm = () => {
 
           <Heading size="sm">Details</Heading>
           <SimpleGrid columns={2} spacing={4}>
-            <FormControl
-              isInvalid={
-                !!errors.warrantyInformation && touched.warrantyInformation
-              }
-            >
+            <FormControl isRequired isInvalid={!!errors.warrantyInformation}>
               <FormLabel>Warranty</FormLabel>
               <Input
                 name="warrantyInformation"
@@ -189,11 +186,7 @@ const AddProductForm = () => {
               />
               <FormErrorMessage>{errors.warrantyInformation}</FormErrorMessage>
             </FormControl>
-            <FormControl
-              isInvalid={
-                !!errors.shippingInformation && touched.shippingInformation
-              }
-            >
+            <FormControl isRequired isInvalid={!!errors.shippingInformation}>
               <FormLabel>Shipping Info</FormLabel>
               <Input
                 name="shippingInformation"
@@ -203,11 +196,7 @@ const AddProductForm = () => {
               />
               <FormErrorMessage>{errors.shippingInformation}</FormErrorMessage>
             </FormControl>
-            <FormControl
-              isInvalid={
-                !!errors.availabilityStatus && touched.availabilityStatus
-              }
-            >
+            <FormControl isRequired isInvalid={!!errors.availabilityStatus}>
               <FormLabel>Availability</FormLabel>
               <Input
                 name="availabilityStatus"
@@ -217,9 +206,7 @@ const AddProductForm = () => {
               />
               <FormErrorMessage>{errors.availabilityStatus}</FormErrorMessage>
             </FormControl>
-            <FormControl
-              isInvalid={!!errors.returnPolicy && touched.returnPolicy}
-            >
+            <FormControl isRequired isInvalid={!!errors.returnPolicy}>
               <FormLabel>Return Policy</FormLabel>
               <Input
                 name="returnPolicy"
@@ -235,11 +222,7 @@ const AddProductForm = () => {
 
           <Heading size="sm">Dimensions</Heading>
           <SimpleGrid columns={3} spacing={4}>
-            <FormControl
-              isInvalid={
-                !!errors.dimensions?.width && touched.dimensions?.width
-              }
-            >
+            <FormControl isRequired isInvalid={!!errors.dimensions?.width}>
               <FormLabel>Width</FormLabel>
               <NumberInput
                 name="dimensions.width"
@@ -251,11 +234,7 @@ const AddProductForm = () => {
               </NumberInput>
               <FormErrorMessage>{errors.dimensions?.width}</FormErrorMessage>
             </FormControl>
-            <FormControl
-              isInvalid={
-                !!errors.dimensions?.height && touched.dimensions?.height
-              }
-            >
+            <FormControl isRequired isInvalid={!!errors.dimensions?.height}>
               <FormLabel>Height</FormLabel>
               <NumberInput
                 name="dimensions.height"
@@ -267,11 +246,7 @@ const AddProductForm = () => {
               </NumberInput>
               <FormErrorMessage>{errors.dimensions?.height}</FormErrorMessage>
             </FormControl>
-            <FormControl
-              isInvalid={
-                !!errors.dimensions?.depth && touched.dimensions?.depth
-              }
-            >
+            <FormControl isRequired isInvalid={!!errors.dimensions?.depth}>
               <FormLabel>Depth</FormLabel>
               <NumberInput
                 name="dimensions.depth"
@@ -289,9 +264,7 @@ const AddProductForm = () => {
 
           <Heading size="sm">Meta</Heading>
           <SimpleGrid columns={2} spacing={4}>
-            <FormControl
-              isInvalid={!!errors.meta?.barcode && touched.meta?.barcode}
-            >
+            <FormControl isRequired isInvalid={!!errors.meta?.barcode}>
               <FormLabel>Barcode</FormLabel>
               <Input
                 name="meta.barcode"
@@ -301,9 +274,7 @@ const AddProductForm = () => {
               />
               <FormErrorMessage>{errors.meta?.barcode}</FormErrorMessage>
             </FormControl>
-            <FormControl
-              isInvalid={!!errors.meta?.qrCode && touched.meta?.qrCode}
-            >
+            <FormControl isRequired isInvalid={!!errors.meta?.qrCode}>
               <FormLabel>QR Code</FormLabel>
               <Input
                 name="meta.qrCode"
@@ -317,7 +288,7 @@ const AddProductForm = () => {
 
           <Divider />
 
-          <FormControl isInvalid={!!errors.thumbnail && touched.thumbnail}>
+          <FormControl isRequired isInvalid={!!errors.thumbnail}>
             <FormLabel>Thumbnail</FormLabel>
             <Input
               name="thumbnail"

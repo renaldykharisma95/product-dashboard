@@ -22,7 +22,6 @@ import {
   ModalOverlay,
   SimpleGrid,
   Skeleton,
-  Spinner,
   Stack,
   Text,
   VStack,
@@ -56,14 +55,14 @@ const ProductList = () => {
 
   const cancelRef = useRef(null);
 
-  const { isMobile } = useScreenDetector();
+  const { isMobile, isTablet } = useScreenDetector();
 
   return (
     <Box pb={12}>
       <Flex
         align="center"
         justifyContent="space-between"
-        pr={[0, 3, 5]}
+        pr={[0, 3, 0, 5]}
         gap={isMobile ? 4 : 0}
         flexDirection={["column", "column", "row"]}
       >
@@ -100,7 +99,7 @@ const ProductList = () => {
             columns={[1, 2, 3]}
             spacing={6}
             py={5}
-            pr={isMobile ? 0 : 5}
+            pr={isMobile || isTablet ? 0 : 5}
           >
             {allProducts.map((product, idx) => (
               <ProductCard

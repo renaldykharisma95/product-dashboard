@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 
 const useScreenDetector = () => {
-  const [width, setWidth] = useState(window.innerWidth);
+  const [width, setWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 0
+  );
 
   const handleWindowSizeChange = () => {
     if (typeof window !== "undefined") setWidth(window.innerWidth);

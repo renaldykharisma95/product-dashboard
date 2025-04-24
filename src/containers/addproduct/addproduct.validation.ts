@@ -39,10 +39,6 @@ export const productValidationSchema = yup.object().shape({
   shippingInformation: yup.string().required("Shipping info is required"),
   availabilityStatus: yup.string().required("Availability status is required"),
   returnPolicy: yup.string().required("Return policy is required"),
-  //   minimumOrderQuantity: yup
-  //     .number()
-  //     .required("Minimum order quantity is required")
-  //     .min(1, "Must be at least 1"),
   meta: yup.object().shape({
     barcode: yup.string().required("Barcode is required"),
     qrCode: yup.string().required("QR Code must be a valid URL"),

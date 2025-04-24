@@ -12,17 +12,17 @@ const Content = ({
   children: React.ReactNode;
   profile: string;
 }) => {
-  const { isMobile } = useScreenDetector();
+  const { isTablet } = useScreenDetector();
   return (
     <Container maxW="full" maxH="100vh" px={3}>
-      {!isMobile && <Sidebar profile={profile} />}
+      {!isTablet && <Sidebar profile={profile} />}
       <NavbarDesktop profile={profile} />
       <Box
         position="absolute"
         top="120px"
-        left={isMobile ? "0px" : "294px"}
-        px={isMobile ? 3 : "auto"}
-        w={isMobile ? "full" : "fit-content"}
+        left={isTablet ? "0px" : "282px"}
+        px={isTablet ? 3 : "auto"}
+        w={isTablet ? "full" : "fit-content"}
       >
         {children}
       </Box>
