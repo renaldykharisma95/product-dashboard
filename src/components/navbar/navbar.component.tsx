@@ -24,13 +24,14 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import useScreenDetector from "@/hooks/useScreenDetector";
 import { usePathname, useRouter } from "next/navigation";
 import { deleteAllCookies } from "@/app/helpers/clearCookies";
 import Logout from "../../assets/logout.webp";
 import Image from "next/image";
 import { sidebaritems } from "../sidebar/sidebaritem";
+import { Profile } from "@/interfaces/profile.interface";
 
 const NavbarDesktop = ({ profile }: { profile: string }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -38,9 +39,13 @@ const NavbarDesktop = ({ profile }: { profile: string }) => {
   const { isMobile, isTablet } = useScreenDetector();
   const router = useRouter();
   const pathname = usePathname();
+  const [profileData, setProfileData] = useState({} as Profile);
 
-  const profileData =
-    profile && profile !== "undefined" ? JSON.parse(profile) : {};
+  useEffect(() => {
+    setProfileData(
+      profile && profile !== "undefined" ? JSON.parse(profile) : null
+    );
+  }, [profile]);
 
   const fullname =
     (profileData.firstName || "") + " " + (profileData.lastName || "");
@@ -49,6 +54,10 @@ const NavbarDesktop = ({ profile }: { profile: string }) => {
     deleteAllCookies();
     localStorage.clear();
     router.push("/login");
+  };
+
+  const onProfileClick = () => {
+    router.push("/profile");
   };
 
   return (
@@ -103,6 +112,9 @@ const NavbarDesktop = ({ profile }: { profile: string }) => {
             </Center>
           </MenuButton>
           <MenuList>
+            <MenuItem color="black" onClick={onProfileClick}>
+              Profile
+            </MenuItem>
             <MenuItem color="black" onClick={onSignOutClick}>
               Sign out
             </MenuItem>

@@ -1,159 +1,145 @@
 "use client";
 
-import { preventRefetch } from "@/app/helpers/preventRefetch";
-import useScreenDetector from "@/hooks/useScreenDetector";
-import { GetMe } from "@/services/auth.services";
+import { Box, Flex, Heading } from "@chakra-ui/react";
+import averageratingdata from "./average-rating-category.json";
+import productcountdata from "./product-count-category.json";
+import pricedistributiondata from "./price-distribution.json";
 import {
-  Avatar,
-  Badge,
-  Box,
-  Divider,
-  Flex,
-  Heading,
-  SimpleGrid,
-  Skeleton,
-  SkeletonCircle,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
-import { useQuery } from "@tanstack/react-query";
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
-const HomeView = () => {
-  const {
-    data: profileData,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["GetMe"],
-    queryFn: () => GetMe(),
-    select: (data) => data,
-    ...preventRefetch,
-  });
+const COLORS = ["#3182CE", "#63B3ED", "#90CDF4", "#BEE3F8"];
 
-  const { isMobile } = useScreenDetector();
-
-  if (isLoading) {
-    return (
-      <Box pb={6}>
-        <Flex direction={{ base: "column", md: "row" }} align="center" gap={6}>
-          <SkeletonCircle size="32" />
-          <Box width="full">
-            <Skeleton height="30px" width="200px" mb={2} />
-            <Skeleton height="20px" width="150px" mb={2} />
-            <Skeleton height="24px" width="80px" />
-          </Box>
-        </Flex>
-
-        <Divider my={6} />
-
-        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-          {[...Array(5)].map((_, i) => (
-            <Stack key={i}>
-              <Skeleton height="24px" width="120px" mb={2} />
-              {[...Array(7)].map((_, j) => (
-                <Skeleton key={j} height="20px" width="full" />
-              ))}
-            </Stack>
-          ))}
-        </SimpleGrid>
-      </Box>
-    );
-  }
-
-  if (error) {
-    return (
-      <Box textAlign="center" py={10}>
-        <Text color="red.500">Error loading profile: {error.message}</Text>
-      </Box>
-    );
-  }
-
+const Home = () => {
   return (
-    <Box pb={6}>
-      <Box>
-        <Flex
-          direction={{ base: "column", md: "row" }}
-          align="center"
-          gap={6}
-        >
-          <Avatar
-            size="2xl"
-            name={profileData?.firstName}
-            src={profileData?.image}
-          />
-          <Flex
-            align={isMobile ? "center" : "start"}
-            justify={isMobile ? "start" : "start"}
-            direction="column"
+    <Box w="100%" px={8}>
+      <Flex justifyContent="space-between" gap={12} alignItems="center">
+        <Box h="fit-content" w="full">
+          <Heading size="md" mb={4} textAlign="center">
+            Average Rating per Category
+          </Heading>
+          <Box
+            w="full"
+            maxW="800px"
+            h="400px"
+            p={4}
+            bg="white"
+            border="1px solid"
+            borderColor="gray.200"
+            borderRadius="2xl"
+            boxShadow="lg"
           >
-            <Heading size="lg">
-              {profileData?.firstName} {profileData?.lastName}
-            </Heading>
-            <Text fontSize="sm" color="gray.500">
-              @{profileData?.username} · {profileData?.role}
-            </Text>
-            <Badge mt={2} colorScheme="purple">
-              {profileData?.bloodGroup}
-            </Badge>
-          </Flex>
-        </Flex>
-
-        <Divider my={6} />
-
-        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-          <Stack>
-            <Heading size="sm">Personal Info</Heading>
-            <Text>Age: {profileData?.age}</Text>
-            <Text>Birthdate: {profileData?.birthDate}</Text>
-            <Text>Email: {profileData?.email}</Text>
-            <Text>Phone: {profileData?.phone}</Text>
-            <Text>Eye Color: {profileData?.eyeColor}</Text>
-            <Text>
-              Hair: {profileData?.hair?.color}, {profileData?.hair?.type}
-            </Text>
-            <Text>Height: {profileData?.height} cm</Text>
-            <Text>Weight: {profileData?.weight} kg</Text>
-          </Stack>
-
-          <Stack>
-            <Heading size="sm">Address</Heading>
-            <Text>{profileData?.address?.address}</Text>
-            <Text>
-              {profileData?.address?.city}, {profileData?.address?.state}{" "}
-              {profileData?.address?.postalCode}
-            </Text>
-            <Text>{profileData?.address?.country}</Text>
-          </Stack>
-
-          <Stack>
-            <Heading size="sm">Company</Heading>
-            <Text>Name: {profileData?.company?.name}</Text>
-            <Text>Title: {profileData?.company?.title}</Text>
-            <Text>Dept: {profileData?.company?.department}</Text>
-            <Text>City: {profileData?.company?.address.city}</Text>
-          </Stack>
-
-          <Stack>
-            <Heading size="sm">Education & Bank</Heading>
-            <Text>University: {profileData?.university}</Text>
-            <Text>
-              Card: {profileData?.bank?.cardType} ****
-              {profileData?.bank?.cardNumber?.slice(-4)}
-            </Text>
-            <Text>IBAN: {profileData?.bank?.iban}</Text>
-            <Text>Currency: {profileData?.bank?.currency}</Text>
-          </Stack>
-
-          <Stack>
-            <Heading size="sm">Crypto</Heading>
-            <Text>Coin: {profileData?.crypto?.coin}</Text>
-            <Text>Wallet: {profileData?.crypto?.wallet}</Text>
-            <Text>Network: {profileData?.crypto?.network}</Text>
-          </Stack>
-        </SimpleGrid>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={averageratingdata}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="category" />
+                <YAxis domain={[3.5, 4.1]} />
+                <Tooltip />
+                <Bar
+                  dataKey="averageRating"
+                  fill="#3182CE"
+                  radius={[8, 8, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </Box>
+        </Box>
+        <Box h="fit-content" w="full">
+          <Heading size="md" mb={4} textAlign="center">
+            Product Distribution by Category
+          </Heading>
+          <Box
+            w="full"
+            maxW="800px"
+            h="400px"
+            p={4}
+            bg="white"
+            border="1px solid"
+            borderColor="gray.200"
+            borderRadius="2xl"
+            boxShadow="lg"
+          >
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={productcountdata}
+                  dataKey="count"
+                  nameKey="category"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={120}
+                  innerRadius={60}
+                  fill="#8884d8"
+                  label
+                >
+                  {productcountdata.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </Box>
+        </Box>
+      </Flex>
+      <Box h="fit-content" w="full" py={16}>
+        <Heading size="md" mb={4} textAlign="center">
+          Price Distribution (Top 10 by ID)
+        </Heading>
+        <Box
+          w="full"
+          maxW="800px"
+          h="400px"
+          p={4}
+          bg="white"
+          border="1px solid"
+          borderColor="gray.200"
+          borderRadius="2xl"
+          boxShadow="lg"
+          mx="auto"
+        >
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={pricedistributiondata}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="title"
+                tick={{ fontSize: 10 }}
+                interval={0}
+                angle={-45}
+                textAnchor="end"
+                height={80}
+              />
+              <YAxis />
+              <Tooltip />
+              <Line
+                type="monotone"
+                dataKey="price"
+                stroke="#3182CE"
+                strokeWidth={3}
+                dot={{ r: 5 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </Box>
       </Box>
     </Box>
   );
 };
 
-export default HomeView;
+export default Home;

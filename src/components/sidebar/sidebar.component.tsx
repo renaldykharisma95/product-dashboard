@@ -12,12 +12,19 @@ import {
 import { sidebaritems } from "./sidebaritem";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Profile } from "@/interfaces/profile.interface";
 
 const Sidebar = ({ profile }: { profile: string }) => {
   const pathname = usePathname();
+  const [profileData, setProfileData] = useState({} as Profile);
 
-  const profileData =
-    profile && profile !== "undefined" ? JSON.parse(profile) : {};
+  useEffect(() => {
+    setProfileData(
+      !!profile && typeof profile !== "undefined" ? JSON.parse(profile) : null
+    );
+  }, [profile]);
+
   const fullname =
     (profileData.firstName || "") + " " + (profileData.lastName || "");
 

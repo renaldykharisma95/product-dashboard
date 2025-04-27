@@ -7,7 +7,7 @@ import {
   UpdateProduct,
 } from "@/services/product.services";
 import { useDisclosure, useToast } from "@chakra-ui/react";
-import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -53,6 +53,18 @@ const useProductListAction = () => {
     initialPageParam: 0,
     refetchOnWindowFocus: false,
   });
+
+  const { data: prodList } = useQuery({
+    queryKey: ["products"],
+    queryFn: ({ pageParam = 0 }) =>
+      GetProductList({
+        limit: 200,
+      }),
+
+    refetchOnWindowFocus: false,
+  });
+
+  console.log("prodList: ", prodList?.products);
 
   const mutationEdit = useMutation({
     mutationFn: (loginData: any) => {

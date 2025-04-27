@@ -15,14 +15,14 @@ const Content = ({
   const { isTablet } = useScreenDetector();
   return (
     <Container maxW="full" maxH="100vh" px={3}>
-      {!isTablet && <Sidebar profile={profile} />}
-      <NavbarDesktop profile={profile} />
+      {!isTablet && !!profile && <Sidebar profile={profile} />}
+      {!!profile && <NavbarDesktop profile={profile} />}
       <Box
         position="absolute"
         top="120px"
         left={isTablet ? "0px" : "282px"}
         px={isTablet ? 3 : "auto"}
-        w={isTablet ? "full" : "fit-content"}
+        w={isTablet ? "full" : "-webkit-fill-available"}
       >
         {children}
       </Box>

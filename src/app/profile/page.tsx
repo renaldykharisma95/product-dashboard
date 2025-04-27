@@ -7,11 +7,11 @@ const Content = dynamic(
   { ssr: false }
 );
 
-const HomeView = dynamic(() => import("@/containers/Home/Home"), {
+const ProfileView = dynamic(() => import("@/containers/Profile/Profile"), {
   ssr: false,
 });
 
-export default async function Home() {
+const ProfilePage = () => {
   const cookieStore = cookies();
   const profile = cookieStore.get("PROFILE_LOGIN")?.value || "{}";
 
@@ -21,7 +21,9 @@ export default async function Home() {
 
   return (
     <Content profile={profile}>
-      <HomeView />
+      <ProfileView />
     </Content>
   );
-}
+};
+
+export default ProfilePage;

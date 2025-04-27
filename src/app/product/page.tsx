@@ -1,16 +1,25 @@
-import Content from "@/components/content/content.component";
-import ProductList from "@/containers/ProductList/ProductList";
+import dynamic from "next/dynamic";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+const Content = dynamic(
+  () => import("@/components/content/content.component"),
+  { ssr: false }
+);
+
+const ProductList = dynamic(
+  () => import("@/containers/ProductList/ProductList"),
+  { ssr: false }
+);
+
 const ProductPage = () => {
   const cookieStore = cookies();
-  const token = cookieStore.get("ACCESS_TOKEN");
   const profile = cookieStore.get("PROFILE_LOGIN")?.value || "{}";
 
-  if (!token) {
+  if (!profile || profile === "{}") {
     redirect("/login");
   }
+  
   return (
     <Content profile={profile}>
       <ProductList />
